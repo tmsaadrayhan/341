@@ -1,0 +1,105 @@
+.model small
+.stack 100h
+.data
+X db 128 dup(?)
+c dw 0
+Str1 db "Enter a number(2digit decimal number): $"
+Str2 db 0DH,0AH,"Pair of values which has the smallest sum= $"
+Str3 db 0DH,0AH,"Inputs: $"
+.code
+main proc
+mov AX, @DATA
+mov ds, ax
+lea dx, Str1
+mov ah, 9
+int 21h
+mov si, 0
+mov ah, 1
+int 21h
+sub al, 48
+mov cl, 10
+mul cl
+mov cl, al
+mov ah, 1
+int 21h
+sub al, 48
+add cl, al
+mov al, 0
+mov ch, 0
+mov c, cx
+lea dx, Str3
+mov ah, 9
+int 21h
+mov ax, 0
+mov ah, 1
+start:
+int 21h
+cmp al, 45
+je n
+mov X[si], al
+jmp nexit
+n:
+int 21h
+mov bl, 0
+sub bl, al
+mov X[si], bl
+nexit:
+inc si
+loop start
+mov di, 0
+mov cx, c
+ascending_order_sorting:
+mov si, di
+checking:
+cmp si, c
+jge change_index
+mov al, X[di]
+mov bl, X[SI]
+cmp al, bl
+jg value_exchange
+inc si
+jmp checking
+value_exchange:
+mov al,X[si]
+mov bl,X[di]
+mov X[si],bl
+mov X[di],al
+inc si
+jmp checking
+change_index:
+inc di
+loop ascending_order_sorting
+lea dx, Str2
+mov ah, 9
+int 21h
+mov ah, 2
+mov si, 0
+mov cx, 2
+print_array:
+cmp X[si], 0
+jl np
+mov dl, X[si]
+int 21h
+jmp pexit
+np:
+mov dl, 45
+int 21h
+mov bl, X[si]
+mov al, 0
+sub al, bl
+mov dl, al
+int 21h
+pexit:
+cmp cx, 1
+je stop
+mov dl, 44
+int 21h
+mov dl, 32
+int 21h
+stop:
+inc si
+loop print_array
+mov ax, 4C00h
+int 21h
+main endp
+end main
